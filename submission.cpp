@@ -1,6 +1,4 @@
-#ifndef SIMPLE_STRING_SIMPLESTRING_HPP
-#define SIMPLE_STRING_SIMPLESTRING_HPP
-
+#include <iostream>
 #include <stdexcept>
 #include <cstring>
 
@@ -173,29 +171,22 @@ public:
         }
 
         if (new_size <= SSO_CAPACITY) {
-            // Target size fits in SSO
             if (!is_sso()) {
-                // Currently on heap, need to move to SSO
                 char temp[SSO_CAPACITY + 1];
-                size_t copy_size = (new_size < str_size) ? new_size : str_size;
-                std::memcpy(temp, heap_ptr, copy_size);
+                std::memcpy(temp, heap_ptr, (new_size < str_size ? new_size : str_size) + 1);
                 delete[] heap_ptr;
-                std::memcpy(small_buffer, temp, copy_size);
+                std::memcpy(small_buffer, temp, (new_size < str_size ? new_size : str_size) + 1);
                 str_capacity = SSO_CAPACITY;
             }
-            // Now in SSO mode
             if (new_size > str_size) {
-                // Expanding: fill with '\0'
                 std::memset(small_buffer + str_size, '\0', new_size - str_size);
             }
             small_buffer[new_size] = '\0';
         } else {
-            // Target size requires heap
             if (new_size > str_capacity) {
                 reserve(new_size);
             }
             if (new_size > str_size) {
-                // Expanding: fill with '\0'
                 std::memset(get_data() + str_size, '\0', new_size - str_size);
             }
             get_data()[new_size] = '\0';
@@ -205,10 +196,6 @@ public:
     }
 
     char& operator[](size_t index) {
-        return get_data()[index];
-    }
-
-    const char& operator[](size_t index) const {
         return get_data()[index];
     }
 
@@ -254,13 +241,6 @@ public:
 
         std::memcpy(get_data() + str_size, str, append_len + 1);
         str_size = new_size;
-    }
-
-    char& at(size_t pos) {
-        if (pos >= str_size) {
-            throw std::out_of_range("Index out of range");
-        }
-        return get_data()[pos];
     }
 
     const char& at(size_t pos) const {
@@ -397,4 +377,8 @@ inline bool MyString::iterator::operator!=(const const_iterator& other) const {
     return ptr != other.ptr;
 }
 
-#endif
+// Main function for testing
+int main() {
+    // This will be replaced by OJ's test harness
+    return 0;
+}
